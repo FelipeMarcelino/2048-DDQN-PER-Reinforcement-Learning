@@ -6,8 +6,9 @@ def main():
     # arguments
     seed = 10
 
-    game = Game2048(4, seed)
-    print(game.get_board())
+    game = Game2048(4)
+
+    print(game.check_available_moves())
 
 
 if __name__ == "__main__":
