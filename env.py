@@ -57,7 +57,8 @@ class Game2048Env(gym.Env):
         """Reset the game"""
         self.__game.reset()
         print("Game reset...")
-        return self.__game.get_board()
+        valid_movements = [0, 1, 2, 3]
+        return (self.__game.get_board(), valid_movements)
 
     def step(self, action):
         print("The enviroment will take a action:", self.__actions_legends[action])
