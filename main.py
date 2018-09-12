@@ -1,14 +1,15 @@
-
-from game import Game2048
+from env import Game2048Env
 
 
 def main():
     # arguments
     seed = 10
 
-    game = Game2048(4)
-
-    print(game.check_available_moves())
+    env = Game2048Env(4)
+    env.reset()
+    env.render()
+    board, reward, done, info = env.step(0)
+    env.render()
 
 
 if __name__ == "__main__":

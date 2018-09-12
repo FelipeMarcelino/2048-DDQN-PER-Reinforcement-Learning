@@ -119,9 +119,9 @@ class Game2048:
         for i in range(4):
             self.make_move(i)
             if np.array_equal(self.__board, self.__temp_board) is False:
-                valid_movements.append(i)
+                self.__valid_movements.append(i)
 
-        return valid_movements
+        return self.__valid_movements
 
     def make_move(self, move):
         """Select one move"""
@@ -140,12 +140,14 @@ class Game2048:
         """Execute movement and get info about merges and scores"""
         self.__board = deepcopy(self.__temp_board)
         self.__total_score += self.__scores_move
+        returned_move_scores = self.__scores_move
+        returned_merged = self.__merged
         self.__valid_movements = self.__check_available_moves()
 
         if len(self.__valid_movements) != 0:
             self.__add_two_or_four()
 
-        return self.__scores_move, self.__merged, self.__valid_movements
+        return returned_move_scores, returned_merged, self.__valid_movements
 
     def get_board(self):
         """Return the board of the game."""
@@ -157,7 +159,7 @@ class Game2048:
 
     def reset(self):
         """Reset game board and total score"""
-        self.__board = self.__init_board
+        self.__board = self.__init_board()
         self.__total_score = 0
         self.__add_two_or_four()
         self.__add_two_or_four()
