@@ -41,6 +41,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=10)
     parser.add_argument("--pretrain", type=int, default=100000)
     parser.add_argument("--batch_size", type=int, default=128)
+    parser.add_argument("--size_board", type=int, default=4)
 
     args = parser.parse_args()
 
