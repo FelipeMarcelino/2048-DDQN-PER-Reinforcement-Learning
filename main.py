@@ -3,7 +3,7 @@ from env import Game2048Env
 from utils import parse_args
 from train import pre_train
 from numba import int64
-from memory import SumTree
+from memory import Memory
 
 
 def main():
@@ -16,9 +16,10 @@ def main():
 
     env = Game2048Env(size_board, seed)
 
-    # pre_train(env, pre_train_len)
+    memory = Memory(size_board, pre_train_len)
+    pre_train(env, pre_train_len, memory)
 
-    sum_tree = SumTree(10, size_board)
+    # b_idx, memory_batch, weights = memory.sample(5)
 
 
 if __name__ == "__main__":

@@ -45,13 +45,16 @@ class Game2048Env(gym.Env):
 
         print("Environment initialised...")
 
-    def __reward_calculation(self, merged, reward):
+    def __reward_calculation(self, merged):
+        reward = 0
         max_board = self.__game.get_board().max()
         if max_board > self.__old_max:
             self.__old_max = max_board
             reward += math.log(self.__old_max, 2) * 0.1
 
         reward += merged
+
+        return reward
 
     def reset(self):
         """Reset the game"""
@@ -72,7 +75,7 @@ class Game2048Env(gym.Env):
                 self.__game.confirm_move()
             )
 
-            self.__reward_calculation(returned_merged, reward)
+            reward = self.__reward_calculation(returned_merged)
 
             if len(np.nonzero(valid_movements)[0]) == 0:
                 done = True

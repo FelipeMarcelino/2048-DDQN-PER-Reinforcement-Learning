@@ -8,7 +8,7 @@ def optimize_model():
     pass
 
 
-def pre_train(env, pre_train_len):
+def pre_train(env, pre_train_len, memory):
     board, valid_movements = env.reset()
     state = to_power_two_matrix(board)
 
@@ -32,8 +32,8 @@ def pre_train(env, pre_train_len):
             # We finished the episode
             next_state = np.zeros(state.shape)
 
-            experience = state, action, reward, next_state, done
-            # memory.store(experience)
+            # experience = state, action, reward, next_state, done
+            memory.store(state, action, reward, next_state, done)
 
             # Start a new episode
             board, valid_movements = env.reset()
@@ -43,8 +43,9 @@ def pre_train(env, pre_train_len):
             next_state = to_power_two_matrix(new_board)
 
             # Add experience to memory
-            experience = state, action, reward, next_state, done
+            # experience = state, action, reward, next_state, done
             # memory.store(experience)
+            memory.store(state, action, reward, next_state, done)
 
             # Our state is now the next_state
             state = next_state
