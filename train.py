@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 from utils import to_power_two_matrix, selection_action
 
 
@@ -15,6 +16,7 @@ def pre_train(env, pre_train_len):
     eps_threshold = 1
 
     for i in range(pre_train_len):
+        env.render()
 
         # Random action
         action = selection_action(eps_threshold, valid_movements, None, state)
@@ -24,6 +26,8 @@ def pre_train(env, pre_train_len):
 
         # If doesnt't have any movement more
         if done:
+            print("Finished...")
+            env.render()
 
             # We finished the episode
             next_state = np.zeros(state.shape)

@@ -57,7 +57,7 @@ class Game2048Env(gym.Env):
         """Reset the game"""
         self.__game.reset()
         print("Game reset...")
-        valid_movements = [0, 1, 2, 3]
+        valid_movements = np.ones(4)
         return (self.__game.get_board(), valid_movements)
 
     def step(self, action):
@@ -74,7 +74,7 @@ class Game2048Env(gym.Env):
 
             self.__reward_calculation(returned_merged, reward)
 
-            if len(valid_movements) == 0:
+            if len(np.nonzero(valid_movements)[0]) == 0:
                 done = True
 
             self.__last_scores_move = returned_move_scores

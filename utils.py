@@ -1,7 +1,11 @@
 import numpy as np
 import torch
+import argparse
+import sys
+from numba import jit
 
 
+@jit(nopython=True)
 def to_power_two_matrix(matrix):
     """Transform matrix to a power 2 matrix. Maximum value: 65566"""
     power_matrix = np.zeros(
@@ -29,11 +33,18 @@ def selection_action(eps_threshold, valid_movements, policy_net, state):
 
             return ordered[intersection[0]]
     else:
-        return np.random.choice(valid_movements)
+        return np.random.choice(np.nonzero(valid_movements)[0])
 
 
-def pars_args():
-    pass
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, default=10)
+    parser.add_argument("--pretrain", type=int, default=100000)
+    parser.add_argument("--batch_size", type=int, default=128)
+
+    args = parser.parse_args()
+
+    return args
 
 
 def plot_info():
