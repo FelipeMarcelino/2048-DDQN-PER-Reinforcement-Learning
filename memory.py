@@ -1,5 +1,6 @@
 import numpy as np
 import ipdb
+import sys
 from collections import namedtuple
 from numba import jitclass, int64, float64, bool_, jit, njit
 
@@ -55,7 +56,7 @@ class SumTree:
         self.__state[self.__data_pointer] = state
         self.__action[self.__data_pointer] = action
         self.__reward[self.__data_pointer] = reward
-        # self.__next_state[self.__data_pointer] = next_state
+        self.__next_state[self.__data_pointer] = next_state
         self.__done[self.__data_pointer] = done
 
         # Update prioritized tree. Obs: Fill the leaves from left to right
@@ -109,6 +110,9 @@ class SumTree:
 
     def get_priotiry(self):
         return self.__tree[-self.__capacity:]
+
+    def get_all_tree(self):
+        return self.__tree
 
 
 spec_memory = [

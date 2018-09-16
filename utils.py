@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import argparse
 import sys
+import matplotlib.pyplot as plt
 from numba import jit
 
 
@@ -22,16 +23,20 @@ def to_power_two_matrix(matrix):
     return power_matrix
 
 
-def selection_action(eps_threshold, valid_movements, policy_net, state):
+def selection_action(
+    eps_threshold, valid_movements, dqn_net, state, size_board, device
+):
     sample = np.random.rand(1)
 
     if sample > eps_threshold:
         with torch.no_grad():
-            labels = policy_net(state, 1)
-            ordered = np.flip(np.argsort(labels), axis=1)[0]
-            intersection = np.nonzero(np.in1d(ordered, valid_movements)[0])
+            output = dqn_net(torch.from_numpy(state).double().to(device), 1, size_board)
+            output_np = output.cpu().detach().numpy()
+            ordered = np.flip(np.argsort(output_np), axis=1)[0]
+            for x in ordered:
+                if valid_movements[x] != 0:
+                    return x
 
-            return ordered[intersection[0]]
     else:
         return np.random.choice(np.nonzero(valid_movements)[0])
 
@@ -42,11 +47,31 @@ def parse_args():
     parser.add_argument("--pretrain", type=int, default=100000)
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--size_board", type=int, default=4)
+    parser.add_argument("--num_episodes", type=int, default=1000)
+    parser.add_argument("--learning_rate", type=float, default=0.00025)
+    parser.add_argument("--ep_update_target", type=int, default=10)
+    parser.add_argument("--decay_rate", type=float, default=0.00005)
 
     args = parser.parse_args()
 
     return args
 
 
-def plot_info():
-    pass
+def plot_info(
+    total_steps_per_episode, total_rewards_per_episode, total_loss_per_episode, episodes
+):
+
+    plt.plot(range(episodes), total_steps_per_episode)
+    plt.ylabel("Duração dos episódios")
+    plt.xlabel("Episódios")
+    plt.show()
+
+    plt.plot(range(episodes), total_rewards_per_episode)
+    plt.ylabel("Reward")
+    plt.xlabel("Episódios")
+    plt.show()
+
+    plt.plot(range(episodes), total_loss_per_episode)
+    plt.ylabel("Loss")
+    plt.xlabel("Episódios")
+    plt.show()

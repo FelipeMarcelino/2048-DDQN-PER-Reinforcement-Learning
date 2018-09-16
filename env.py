@@ -59,12 +59,12 @@ class Game2048Env(gym.Env):
     def reset(self):
         """Reset the game"""
         self.__game.reset()
-        print("Game reset...")
+        # print("Game reset...")
         valid_movements = np.ones(4)
         return (self.__game.get_board(), valid_movements)
 
     def step(self, action):
-        print("The enviroment will take a action:", self.__actions_legends[action])
+        # print("The enviroment will take a action:", self.__actions_legends[action])
         done = False
         reward = 0
         try:

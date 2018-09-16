@@ -129,10 +129,6 @@ class CNN_2048_MODEL(nn.Module):
         advantage_action_2 = self.__dense_advantage_2(advantage_action_1)
 
         # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum A(s,a'))
-        # print(advantage_action_2, hidden_value_2)
         reduced_mean = torch.mean(advantage_action_2, dim=1, keepdim=True)
-        # print(reduced_mean)
-        # reduced_array = advantage_action_2 - reduced_mean
-        # print(reduced_array)
-        Q = hidden_value_2 + (advantage_action_2 - reduced_mean)
-        # print(Q)
+        output = hidden_value_2 + (advantage_action_2 - reduced_mean)
+        return output
