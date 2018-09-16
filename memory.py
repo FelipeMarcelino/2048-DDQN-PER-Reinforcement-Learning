@@ -194,14 +194,13 @@ class Memory:
             # P(j)
             sampling_probabilities = priority / self.__tree.total_priority()
 
-            #  IS = (1/batch_size * 1/P(i))**per_b /max wi == (batch_size*P(i))**-per_b  /MAX(weight)
+            #  IS = (1/batch_size * 1/P(i))**per_b /max wi == (Batch_size*P(i))**-per_b  /MAX(weight)
             batch_ISWeights[i, 0] = (
                 np.power(batch_size * sampling_probabilities, -self.__per_b)
                 / max_weight
             )
 
             batch_idx[i] = index
-
             memory_batch.append(Transition(state, action, reward, next_state, done))
 
         return batch_idx, memory_batch, batch_ISWeights

@@ -1,14 +1,16 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import torch
 from utils import to_power_two_matrix, selection_action
+from memory import Transition
 
 
 def optimize_model():
     pass
 
 
-def pre_train(env, pre_train_len, memory):
+def pre_train(env, pre_train_len, memory, model, size_board):
     board, valid_movements = env.reset()
     state = to_power_two_matrix(board)
 
@@ -52,6 +54,12 @@ def pre_train(env, pre_train_len, memory):
 
             # Valid movements
             valid_movements = info["valid_movements"]
+
+
+#    _, transitions, _ = memory.sample(2)
+#    samples = Transition(*zip(*transitions))
+#    features = torch.from_numpy(np.asarray(samples.state))
+#    model(features, 2, size_board)
 
 
 def train(model):
