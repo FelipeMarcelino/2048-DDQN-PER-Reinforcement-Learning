@@ -189,7 +189,7 @@ def train(
     total_loss_per_episode = []
 
     # Optmizer
-    optmizer = optim.RMSprop(dqn_net.parameters())
+    optmizer = optim.RMSprop(dqn_net.parameters(), lr=learning_rate)
 
     for ep in range(episodes):
         # Set step to 0
