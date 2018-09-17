@@ -174,6 +174,7 @@ def train(
     explore_stop,
     learning_rate,
     gamma,
+    interval_mean,
 ):
 
     # Using GPU or CPU
@@ -187,6 +188,12 @@ def train(
     total_steps_per_episode = []
     total_rewards_per_episode = []
     total_loss_per_episode = []
+    total_score_per_episode = []
+
+    best_board = None
+    best_score = 0
+    best_steps = 0
+    best_ep = -1
 
     # Optmizer
     optmizer = optim.RMSprop(dqn_net.parameters(), lr=learning_rate)
@@ -234,12 +241,20 @@ def train(
                 loss_total_ep = np.sum(loss_ep) / step
                 total_loss_per_episode.append(loss_total_ep)
 
+                total_score_per_episode.append(info["total_score"])
+
                 print("Episode:", ep)
                 print("Total Reward:", total_reward)
                 print("Eps_threshold:", eps_threshold)
                 print("Loss ep:", loss_total_ep)
                 env.render()
                 print("---------------------------")
+
+                if info["total_score"] > best_score:
+                    best_score = info["total_score"]
+                    best_ep = ep
+                    best_board = deepcopy(new_board)
+                    best_score = step
 
             else:
                 next_state = to_power_two_matrix(new_board)
@@ -281,5 +296,7 @@ def train(
         total_steps_per_episode,
         total_rewards_per_episode,
         total_loss_per_episode,
+        total_score_per_episode,
+        interval_mean,
         episodes,
     )

@@ -14,13 +14,14 @@ def main():
     args = parse_args()
 
     seed = args.seed
-    pre_train_len = args.pretrain
+    capacity = args.capacity
     size_board = args.size_board
     batch_size = args.batch_size
     episodes = args.num_episodes
     ep_update_target = args.ep_update_target
     learning_rate = args.learning_rate
     decay_rate = args.decay_rate
+    interval_mean = args.interval_mean
     explore_start = 1.
     explore_stop = 0.01
     gamma = 0.95
@@ -29,7 +30,7 @@ def main():
     env = Game2048Env(size_board, seed)
 
     # Create memory replay
-    memory = Memory(size_board, pre_train_len)
+    memory = Memory(size_board, capacity)
 
     # Create model
     c_in_1 = c_in_2 = size_board * size_board
@@ -39,7 +40,7 @@ def main():
 
     start = time.time()
     # Pretrain
-    pre_train(env, pre_train_len, memory)
+    pre_train(env, capacity, memory)
     print("Execution pre-train (in seconds):", time.time() - start)
 
     start = time.time()
@@ -58,6 +59,7 @@ def main():
         explore_stop,
         learning_rate,
         gamma,
+        interval_mean,
     )
     print("Execution train (in seconds)", time.time() - start)
 
