@@ -21,13 +21,12 @@ def optimize_model(
     batch_size,
     size_board,
     gamma,
-    optmizer,
+    optimizer,
     device,
 ):
 
     # Sample batch
     tree_indexes, memory_batch, batch_ISWeights = memory.sample(batch_size)
-    # print(batch_ISWeights)
 
     samples = Transition(*zip(*memory_batch))
 
@@ -39,7 +38,9 @@ def optimize_model(
 
     target_qs_batch = []
 
-    torch_next_states_batch = torch.from_numpy(np.asarray(next_states_batch)).to(device)
+    torch_next_states_batch = (
+        torch.from_numpy(np.asarray(next_states_batch)).float().to(device)
+    )
 
     # Get Q values for next state
     q_next_state = dqn_net(torch_next_states_batch, batch_size, size_board)
@@ -64,7 +65,7 @@ def optimize_model(
 
     targets_batch = np.array([each for each in target_qs_batch])
 
-    torch_states_batch = torch.from_numpy(np.asarray(states_batch)).to(device)
+    torch_states_batch = torch.from_numpy(np.asarray(states_batch)).float().to(device)
 
     output = dqn_net(torch_states_batch, batch_size, size_board)
 
@@ -74,23 +75,25 @@ def optimize_model(
 
     # Q is our predicted Q value
     q_values = output.gather(1, torch_actions_batch.to(device))
+    q_values = q_values.float()
 
     # Absolute error for update tree
     absolute_errors = (
         torch.abs(
-            q_values - torch.from_numpy(targets_batch).view(batch_size, 1).to(device)
+            q_values
+            - torch.from_numpy(targets_batch).view(batch_size, 1).float().to(device)
         )
         .cpu()
         .detach()
         .numpy()
     )
 
-    torch_batch_ISWeights = torch.from_numpy(batch_ISWeights).double().to(device)
+    torch_batch_ISWeights = torch.from_numpy(batch_ISWeights).to(device)
 
     # Mean squared error
-    diff_target = q_values - torch.from_numpy(targets_batch).double().view(
+    diff_target = q_values - torch.from_numpy(targets_batch).view(
         batch_size, 1
-    ).to(device)
+    ).float().to(device)
     squared_diff = diff_target ** 2
     weighted_squared_diff = squared_diff * torch_batch_ISWeights
 
@@ -98,10 +101,10 @@ def optimize_model(
     loss = torch.mean(weighted_squared_diff)
 
     # Optimization
-    optmizer.zero_grad()
+    optimizer.zero_grad()
 
     loss.backward()
-    optmizer.step()
+    optimizer.step()
 
     # Squeze absolute errors
     absolute_errors = np.squeeze(absolute_errors, 1)
@@ -191,12 +194,13 @@ def train(
     total_score_per_episode = []
 
     best_board = None
+    best_reward = 0
     best_score = 0
     best_steps = 0
     best_ep = -1
 
-    # Optmizer
-    optmizer = optim.RMSprop(dqn_net.parameters(), lr=learning_rate)
+    # Optimizer
+    optimizer = optim.RMSprop(dqn_net.parameters(), lr=learning_rate)
 
     for ep in range(episodes):
         # Set step to 0
@@ -245,6 +249,7 @@ def train(
 
                 print("Episode:", ep)
                 print("Total Reward:", total_reward)
+                print("Total episodes", step)
                 print("Eps_threshold:", eps_threshold)
                 print("Loss ep:", loss_total_ep)
                 env.render()
@@ -252,9 +257,10 @@ def train(
 
                 if info["total_score"] > best_score:
                     best_score = info["total_score"]
+                    best_reward = total_reward
                     best_ep = ep
                     best_board = deepcopy(new_board)
-                    best_score = step
+                    best_steps = step
 
             else:
                 next_state = to_power_two_matrix(new_board)
@@ -278,7 +284,7 @@ def train(
                 batch_size,
                 size_board,
                 gamma,
-                optmizer,
+                optimizer,
                 device,
             )
 
@@ -291,6 +297,14 @@ def train(
         if ep % ep_update_target == 0:
             print("Update target_net")
             target_net = deepcopy(dqn_net)
+
+    print("***********************")
+    print("Best ep", best_ep)
+    print("Best Board:")
+    print(best_board)
+    print("Best step", best_steps)
+    print("Best score", best_score)
+    print("***********************")
 
     plot_info(
         total_steps_per_episode,

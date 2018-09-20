@@ -15,10 +15,10 @@ class CNN_2048_MODEL(nn.Module):
             2 * 4 * c_out_2 * 2 + 3 * 3 * c_out_2 * 2 + 4 * 3 * c_out_1 * 2
         )
 
-        self.__dense_value_1 = nn.Linear(self.__expanded_size, 256).double()
-        self.__dense_value_2 = nn.Linear(256, 1).double()
-        self.__dense_advantage_1 = nn.Linear(self.__expanded_size, 256).double()
-        self.__dense_advantage_2 = nn.Linear(256, 4).double()
+        self.__dense_value_1 = nn.Linear(self.__expanded_size, 256)
+        self.__dense_value_2 = nn.Linear(256, 1)
+        self.__dense_advantage_1 = nn.Linear(self.__expanded_size, 256)
+        self.__dense_advantage_2 = nn.Linear(256, 4)
 
         self.__cnn_1 = nn.Conv2d(
             c_in_1,
@@ -27,7 +27,7 @@ class CNN_2048_MODEL(nn.Module):
             stride=(1, 1),
             padding=(0, 0),
             dilation=(1, 1),
-        ).double()
+        )
 
         self.__cnn_1_2 = nn.Conv2d(
             c_out_1,
@@ -36,7 +36,7 @@ class CNN_2048_MODEL(nn.Module):
             stride=(1, 1),
             padding=(0, 0),
             dilation=(1, 1),
-        ).double()
+        )
 
         self.__cnn_2 = nn.Conv2d(
             c_in_2,
@@ -45,7 +45,7 @@ class CNN_2048_MODEL(nn.Module):
             stride=(1, 1),
             padding=(0, 0),
             dilation=(1, 1),
-        ).double()
+        )
 
         self.__cnn_2_2 = nn.Conv2d(
             c_out_1,
@@ -54,7 +54,7 @@ class CNN_2048_MODEL(nn.Module):
             stride=(1, 1),
             padding=(0, 0),
             dilation=(1, 1),
-        ).double()
+        )
 
     def forward(self, features, batch_size, size_board):
         features_view = features.view(batch_size, 16, size_board, size_board)

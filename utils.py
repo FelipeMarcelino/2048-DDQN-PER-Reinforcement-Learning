@@ -30,7 +30,7 @@ def selection_action(
 
     if sample > eps_threshold:
         with torch.no_grad():
-            output = dqn_net(torch.from_numpy(state).double().to(device), 1, size_board)
+            output = dqn_net(torch.from_numpy(state).float().to(device), 1, size_board)
             output_np = output.cpu().detach().numpy()
             ordered = np.flip(np.argsort(output_np), axis=1)[0]
             for x in ordered:
@@ -84,7 +84,7 @@ def plot_info(
     interval_steps = get_mean_interval(total_steps_per_episode, interval_mean)
     plt.plot(range(episodes), total_steps_per_episode)
     plt.plot(range(episodes), interval_steps)
-    plt.ylabel("Duração dos episódios")
+    plt.ylabel("Episode durations")
     plt.xlabel("Episodes")
     plt.show()
 
